@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Validatorjs</title>
+	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+	<script src="validator.js"></script>
+	<style>
+	body {
+		padding:30px;
+	}
+	input {
+		padding:10px;
+		margin-right: 5px;
+		font-size: 14px;
+		font-family: "Helvetica";
+		font-weight: lighter;
+		color: #333;
+	}
+	.pristine {
+		border: 1px solid #CCC;
+		transition: border 0.25s ease-in;
+	    -ms-transition: border 0.25s ease-in;
+	    -moz-transition: border 0.25s ease-in;
+	    -webkit-transition: border 0.25s ease-in;
+	}
+	.valid {
+		border: 1px solid #2ecc71;
+	}
+	.invalid {
+		border: 1px solid #e74c3c;
+		transition: border 0.25s ease-in;
+	    -ms-transition: border 0.25s ease-in;
+	    -moz-transition: border 0.25s ease-in;
+	    -webkit-transition: border 0.25s ease-in;
+	}
+	</style>
+</head>
+<body>
+	<form id="myform">
+		<input type="text" data-validate="name" placeholder="Name">
+		<br>
+		<br>
+		<input type="text" data-validate="email" placeholder="Email">
+	</form>
+	<script>
+	$("#myform").validator();
+	</script>
+</body>
+</html>

@@ -9,40 +9,52 @@
 	<style>
 	body {
 		padding:30px;
+		font-family: "Helvetica";
+		font-weight: lighter;
+	}
+	label {
+		min-width: 60px;
+		display: inline-block;
+		color:#333;
 	}
 	input {
+		outline: none;
 		padding:10px;
 		margin-right: 5px;
 		font-size: 14px;
-		font-family: "Helvetica";
-		font-weight: lighter;
 		color: #333;
-	}
-	.pristine {
+		background-color: #FFF;
 		border: 1px solid #CCC;
-		transition: border 0.25s ease-in;
-	    -ms-transition: border 0.25s ease-in;
-	    -moz-transition: border 0.25s ease-in;
-	    -webkit-transition: border 0.25s ease-in;
 	}
-	.valid {
-		border: 1px solid #2ecc71;
+	input:focus {
+		border-color: #9ecaed;
+		box-shadow: 0 0 2px #9ecaed;
+		color: #000;
 	}
-	.invalid {
-		border: 1px solid #e74c3c;
-		transition: border 0.25s ease-in;
-	    -ms-transition: border 0.25s ease-in;
-	    -moz-transition: border 0.25s ease-in;
-	    -webkit-transition: border 0.25s ease-in;
+	input.valid {
+		border-color: #2ecc71;
+		transition: border 0.25s;
+	}
+	input.valid:focus {
+		box-shadow: 0 0 2px #2ecc71;
+	}
+	input.invalid {
+		border-color: #e74c3c;
+		transition: border 0.25s box-shadow: 0.25s;
+	}
+	input.invalid:focus {
+		box-shadow: 0 0 2px #e74c3c;
 	}
 	</style>
 </head>
 <body>
 	<form id="myform">
-		<input type="text" data-validate="name" placeholder="Name">
+		<label for="name">Name</label>
+		<input type="text" data-validate="name" id="name" placeholder="Name">
 		<br>
 		<br>
-		<input type="text" data-validate="email" placeholder="Email">
+		<label for="email">Email</label>
+		<input type="text" data-validate="email" name="email" placeholder="Email">
 	</form>
 	<script>
 	$("#myform").validator();

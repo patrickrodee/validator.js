@@ -64,16 +64,49 @@
 		}
 
 		return this.each(function() {
-			var formElems = $(this).find('input[data-validate]');
+			$(this).attr('autocomplete', (settings.autocomplete ? "on" : "off"));
+			var $formElems = $(this).find('input[data-validate]');
+			$formElems.each(function() {
+				var $elem = $(this);
+				$elem.bind('blur', function() {
+					validate(this);
+				});
+				$elem.addClass("pristine");
+				if (settings.autocomplete) {
+					setInterval(function() {
+						if ( $elem.val() != "") {
+							$formElems.each(function() {
+								if ( $(this).val() != "" ) {
+									validate(this);
+								}
+							});
+						}
+					}, 200);
+				}
+			});
+
+			/*
 			for (var i = 0; i < formElems.length; i++) {
 				(function () {
 					var $item = $(formElems[i]);
 					$item.addClass("pristine");
+					if (settings.autocomplete) {
+						setInterval(function() {
+							if ($item.val() != "") {
+								formElems.each(function() {
+									if ($(this).val() != "") {
+										validate(this);
+									}
+								});
+							}
+						}, 200);
+					}
 					$item.bind("blur", function() {
 						validate(this);
 					});
 				})();
 			}
+			*/
 		});
 	};
 
@@ -81,7 +114,7 @@
 	$.fn.validator.defaults = {
 		comparators: {
 			name: "^[a-zA-Z]{2,}",
-			address: "^[a-zA-Z]{2,}",
+			address: "^.{2,}",
 			city: "^[a-zA-Z]{2,}",
 			state: "^[a-zA-Z]{2,}",
 			zip: ".{2,}",
@@ -91,6 +124,7 @@
 			email: "^[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\\.[a-zA-Z]{2,4}",
 			url: "[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)"
 		},
+		autocomplete: false,
 		validClass: "valid",
 		validAfter: false,
 		validAfterElem: "<i class='fa fa-fw fa-check' style='color:#2ecc71;'></i>",

@@ -25,10 +25,12 @@
 		color: #333;
 		background-color: #FFF;
 		border: 1px solid #CCC;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 	input:focus {
 		border-color: #9ecaed;
-		box-shadow: 0 0 2px #9ecaed;
+		box-shadow: 0 0 3px #9ecaed;
 		color: #000;
 	}
 	input.valid {
@@ -37,14 +39,14 @@
 		transition: border 0.25s box-shadow: 0.25s;
 	}
 	input.valid:focus {
-		box-shadow: 0 0 2px #2ecc71;
+		box-shadow: 0 0 3px #2ecc71;
 	}
 	input.invalid {
 		border-color: #e74c3c;
 		transition: border 0.25s box-shadow: 0.25s;
 	}
 	input.invalid:focus {
-		box-shadow: 0 0 2px #e74c3c;
+		box-shadow: 0 0 3px #e74c3c;
 	}
 	</style>
 </head>
@@ -84,7 +86,8 @@
 	<script>
 	$("#myform").validator({
 		validAfter: true,
-		invalidAfter: true
+		invalidAfter: true,
+		//autocomplete: true
 	});
 	</script>
 </body>

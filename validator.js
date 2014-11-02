@@ -8,9 +8,9 @@
 		// Initialize check object
 		var check = {};
 		// Populate the check object
-		for (var key in settings.comparators) {
-			if (settings.comparators.hasOwnProperty(key) && (settings.comparators[key] != null)) {
-				check[key] = new RegExp(settings.comparators[key]);
+		for (var key in settings) {
+			if (settings.hasOwnProperty(key) && (settings[key] != null) && (typeof(settings[key]) == "string"))  {
+				check[key] = new RegExp(settings[key]);
 			}
 		}
 
@@ -84,46 +84,21 @@
 					}, 200);
 				}
 			});
-
-			/*
-			for (var i = 0; i < formElems.length; i++) {
-				(function () {
-					var $item = $(formElems[i]);
-					$item.addClass("pristine");
-					if (settings.autocomplete) {
-						setInterval(function() {
-							if ($item.val() != "") {
-								formElems.each(function() {
-									if ($(this).val() != "") {
-										validate(this);
-									}
-								});
-							}
-						}, 200);
-					}
-					$item.bind("blur", function() {
-						validate(this);
-					});
-				})();
-			}
-			*/
 		});
 	};
 
 	// Exposing the defaults
 	$.fn.validator.defaults = {
-		comparators: {
-			name: "^[a-zA-Z]{2,}",
-			address: "^.{2,}",
-			city: "^[a-zA-Z]{2,}",
-			state: "^[a-zA-Z]{2,}",
-			zip: ".{2,}",
-			country: "^[a-zA-Z]{3,}",
-			phone: "^[0-9]{7,11}$",
-			ext: "^x[0-9]{1,}|^[0-9]{1,}",
-			email: "^[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\\.[a-zA-Z]{2,4}",
-			url: "[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)"
-		},
+		name: "^[a-zA-Z]{2,}",
+		address: "^.{2,}",
+		city: "^[a-zA-Z]{2,}",
+		state: "^[a-zA-Z]{2,}",
+		zip: ".{2,}",
+		country: "^[a-zA-Z]{3,}",
+		phone: "^[0-9]{7,11}$",
+		ext: "^x[0-9]{1,}|^[0-9]{1,}",
+		email: "^[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\\.[a-zA-Z]{2,4}",
+		url: "[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)",
 		autocomplete: false,
 		validClass: "valid",
 		validAfter: false,

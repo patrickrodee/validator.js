@@ -53,7 +53,7 @@
 <body>
 	<form id="myform">
 		<label for="name">Name</label>
-		<input type="text" data-validate="name" id="name" placeholder="Name">
+		<input type="text" data-validate="!name" id="name" placeholder="Name">
 		<br>
 		<br>
 		<label for="email">Email</label>
@@ -82,6 +82,9 @@
 		<br>
 		<label for="url">URL</label>
 		<input type="text" data-validate="url" name="url" placeholder="URL">
+		<br>
+		<br>
+		<button type="submit">Submit Form</button>
 	</form>
 	<script>
 	$("#myform").validator({

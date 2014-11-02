@@ -16,7 +16,8 @@
 
 		function validate(element) {
 			$element = $(element);
-			var validateType = $element.data("validate");
+			// If it is required (has a "!" at the front), pass it through without the !
+			var validateType = ( $element.data("validate").charAt(0) == "!" ? $element.data("validate").slice(1) : $elemet.data("validate") );
 			// Element hasn't been clicked yet.
 			if ( $element.hasClass('pristine') ) {
 				// If validation passes...
@@ -30,23 +31,30 @@
 				}
 				// If validation fails...
 				else {
-					// Add the invalidClass and the invalidAfter element
+					// Add the invalidClass
 					$element.addClass(settings.invalidClass);
+					// If invalidAfter is true, append the invalidAfterElem
 					if (settings.invalidAfter) {
 						$element.after(settings.invalidAfterElem);
 					}
 				}
+				// To keep bound events low, we unbind "blur" from items that are dirty and
+				// now bind the "input" event to keep track of input changes.
 				$element.unbind("blur").removeClass('pristine').addClass('dirty').on('input', function() {
 					validate(this);
 				});
 			}
 			// Element is not pristine (is dirty)
 			else {
+				// If validation passes... 
 				if ( check[validateType].test( $element.val() ) ) {
+					// If the element has invalidClass, remove invalidClass
 					if ( $element.hasClass(settings.invalidClass) ) {
 						$element.removeClass(settings.invalidClass);
 					}
-					$element.next().remove();
+					if ( settings.invalidAfter ) {
+						$element.next().remove();
+					}
 					$element.addClass(settings.validClass);
 					if (settings.validAfter) {
 						$element.after(settings.validAfterElem);
@@ -72,6 +80,9 @@
 					validate(this);
 				});
 				$elem.addClass("pristine");
+				if ($elem.data('validate').charAt(0) == "!") {
+					$elem.attr('required', 'true');
+				}
 				if (settings.autocomplete) {
 					setInterval(function() {
 						if ( $elem.val() != "") {
@@ -90,10 +101,10 @@
 	// Exposing the defaults
 	$.fn.validator.defaults = {
 		name: "^[a-zA-Z]{2,}",
-		address: "^.{2,}",
+		address: "^.{5,}",
 		city: "^[a-zA-Z]{2,}",
 		state: "^[a-zA-Z]{2,}",
-		zip: ".{2,}",
+		zip: "^[0-9]{5}",
 		country: "^[a-zA-Z]{3,}",
 		phone: "^[0-9]{7,11}$",
 		ext: "^x[0-9]{1,}|^[0-9]{1,}",

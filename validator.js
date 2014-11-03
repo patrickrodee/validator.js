@@ -14,15 +14,26 @@
 		var check = {};
 		// Populate the check object
 		for (var key in settings) {
-			if (settings.hasOwnProperty(key) && (settings[key] != null) && (typeof(settings[key]) == "string"))  {
+			if (settings.hasOwnProperty(key) && (settings[key] !== null) && (typeof(settings[key]) == "string"))  {
 				check[key] = new RegExp(settings[key]);
+			}
+		}
+
+		function completion(elems) {
+			if (elems.length === 0) {
+				return true;
+			}
+			else {
+				var $elem = $(elems[0]);
+				var vType = $elem.data("validate");
+				return check[vType].test( $elem.val() ) && completion(elems.slice(1));
 			}
 		}
 
 		function validate(element) {
 			$element = $(element);
 			// If it is required (has a "!" at the front), pass it through without the !
-			var validateType = ( $element.data("validate").charAt(0) == "!" ? $element.data("validate").slice(1) : $element.data("validate") );
+			var validateType = $element.data("validate");
 			// Element hasn't been clicked yet.
 			if ( $element.hasClass('pristine') ) {
 				// If validation passes...
@@ -77,17 +88,16 @@
 		}
 
 		return this.each(function() {
-			$(this).attr('autocomplete', (settings.autocomplete ? "on" : "off"));
-			var $formElems = $(this).find('input[data-validate]');
+			$this = $(this);
+			$this.attr('autocomplete', (settings.autocomplete ? "on" : "off"));
+			$this.find("button[type='submit']").prop('disabled', (settings.blockUntilComplete === true ? true : false ) );
+			var $formElems = $this.find('input[data-validate]');
 			$formElems.each(function() {
 				var $elem = $(this);
 				$elem.bind('blur', function() {
 					validate(this);
 				});
-				$elem.addClass("pristine");
-				if ($elem.data('validate').charAt(0) == "!") {
-					$elem.attr('required', 'true');
-				}
+				$elem.addClass("pristine").attr('required','true');
 				/**************************************************************
 				******* TO DO -- MAKE THIS WORK WITH DELETION. Currently does
 				******* not support deletion of characters. Figure out how to
@@ -108,9 +118,9 @@
 				**************************************************************/
 				if (settings.autocomplete) {
 					setInterval(function() {
-						if ( $elem.val() != "") {
+						if ( $elem.val() !== "") {
 							$formElems.each(function() {
-								if ( $(this).val() != "" ) {
+								if ( $(this).val() !== "" ) {
 									validate(this);
 								}
 							});
@@ -118,6 +128,16 @@
 					}, 200);
 				}
 			});
+			setInterval(function() {
+				if (settings.blockUntilComplete) {
+					if (completion($formElems)) {
+						$this.find("button[type='submit']").prop('disabled', false);
+					}
+					else {
+						$this.find("button[type='submit']").prop('disabled', true);
+					}
+				}
+			}, 200);
 		});
 	};
 
@@ -143,6 +163,6 @@
 		invalidAfterElem: "<i class='fa fa-fw fa-times' style='color:#e74c3c';></i>",
 		requiredClass: null,
 		optionalClass: null,
-		blockUntilComplete: "actionToBlock"
+		blockUntilComplete: true
 	};
 }( jQuery ));

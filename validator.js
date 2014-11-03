@@ -17,7 +17,7 @@
 		function validate(element) {
 			$element = $(element);
 			// If it is required (has a "!" at the front), pass it through without the !
-			var validateType = ( $element.data("validate").charAt(0) == "!" ? $element.data("validate").slice(1) : $elemet.data("validate") );
+			var validateType = ( $element.data("validate").charAt(0) == "!" ? $element.data("validate").slice(1) : $element.data("validate") );
 			// Element hasn't been clicked yet.
 			if ( $element.hasClass('pristine') ) {
 				// If validation passes...
@@ -83,6 +83,24 @@
 				if ($elem.data('validate').charAt(0) == "!") {
 					$elem.attr('required', 'true');
 				}
+				/**************************************************************
+				******* TO DO -- MAKE THIS WORK WITH DELETION. Currently does
+				******* not support deletion of characters. Figure out how to
+				******* make it work with that.
+				*/
+				if ($elem.data('validate') == "phoneWithFormat" || $elem.data('validate') == "!phoneWithFormat") {
+					$elem.on('input', function() {
+						if ($elem.val().length == 3) {
+							$elem.val($elem.val().replace(/(\d{3})/, "($1) "));
+						}
+						if ($elem.val().length >= 9 ) {
+							$elem.val($elem.val().replace(/(\u0028\d{3}\u0029\s\d{3})(\d{1,4})/, "$1-$2"));
+						}
+						//$elem.val($elem.val().replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3"))
+					});
+				}
+				/*
+				**************************************************************/
 				if (settings.autocomplete) {
 					setInterval(function() {
 						if ( $elem.val() != "") {
@@ -107,6 +125,7 @@
 		zip: "^[0-9]{5}",
 		country: "^[a-zA-Z]{3,}",
 		phone: "^[0-9]{7,11}$",
+		phoneWithFormat: "^\\(\\d{3}\\) \\d{3}\\-\\d{4}",
 		ext: "^x[0-9]{1,}|^[0-9]{1,}",
 		email: "^[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\\.[a-zA-Z]{2,4}",
 		url: "[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)",
@@ -116,6 +135,9 @@
 		validAfterElem: "<i class='fa fa-fw fa-check' style='color:#2ecc71;'></i>",
 		invalidClass: "invalid",
 		invalidAfter: false,
-		invalidAfterElem: "<i class='fa fa-fw fa-times' style='color:#e74c3c';></i>"
+		invalidAfterElem: "<i class='fa fa-fw fa-times' style='color:#e74c3c';></i>",
+		requiredClass: null,
+		optionalClass: null,
+		blockUntilComplete: "actionToBlock"
 	};
 }( jQuery ));

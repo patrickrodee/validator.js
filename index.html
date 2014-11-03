@@ -34,26 +34,35 @@
 		color: #000;
 	}
 	input.valid {
-		border-color: #2ecc71;
+		border-color: #7ca82b;
 		transition: border 0.25s;
 		transition: border 0.25s box-shadow: 0.25s;
 	}
 	input.valid:focus {
-		box-shadow: 0 0 3px #2ecc71;
+		box-shadow: 0 0 3px #7ca82b;
 	}
 	input.invalid {
-		border-color: #e74c3c;
+		border-color: #cc3300;
 		transition: border 0.25s box-shadow: 0.25s;
 	}
 	input.invalid:focus {
-		box-shadow: 0 0 3px #e74c3c;
+		box-shadow: 0 0 3px #cc3300;
+	}
+	button {
+		margin-left: 84px;
+		margin-top: 30px;
+		width: 170px;
+		padding: 10px;
+		font-size: 14px;
+		background: #FFF;
+		border: 1px solid #CCC;
 	}
 	</style>
 </head>
 <body>
 	<form id="myform" novalidate>
 		<label for="name">Name</label>
-		<input type="text" data-validate="name" id="name" placeholder="Name">
+		<input type="text" data-validate="name" id="name" placeholder="First Last">
 		<br>
 		<br>
 		<label for="email">Email</label>
@@ -61,7 +70,7 @@
 		<br>
 		<br>
 		<label for="phone">Phone</label>
-		<input type="text" data-validate="phoneWithFormat" name="phone" placeholder="Phone">
+		<input type="text" data-validate="phone" name="phone" placeholder="Phone">
 		<br>
 		<br>
 		<label for="address">Address</label>
@@ -88,8 +97,7 @@
 	</form>
 	<script>
 	$("#myform").validator({
-		validAfter: true,
-		invalidAfter: true
+		blockUntilComplete: "#actionToBlock"
 	});
 	</script>
 </body>

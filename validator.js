@@ -30,7 +30,7 @@
 			}
 		}
 
-		function validate(element) {
+		function validate(element, elemSiblings) {
 			$element = $(element);
 			// If it is required (has a "!" at the front), pass it through without the !
 			var validateType = $element.data("validate");
@@ -40,6 +40,10 @@
 				if ( check[validateType].test( $element.val() ) ) {
 					// Add the validClass and the validAfter
 					$element.addClass(settings.validClass);
+					// If requiredFlag is set to true
+					if (settings.requiredFlag) {
+						$element.next().remove();
+					}
 					// If invalidAfter is set to display
 					if (settings.validAfter) {
 						$element.after(settings.validAfterElem);
@@ -50,6 +54,9 @@
 					// Add the invalidClass
 					$element.addClass(settings.invalidClass);
 					// If invalidAfter is true, append the invalidAfterElem
+					if (settings.requiredFlag) {
+						$element.next().remove();
+					}
 					if (settings.invalidAfter) {
 						$element.after(settings.invalidAfterElem);
 					}
@@ -57,8 +64,14 @@
 				// To keep bound events low, we unbind "blur" from items that are dirty and
 				// now bind the "input" event to keep track of input changes.
 				$element.unbind("blur").removeClass('pristine').addClass('dirty').on('input', function() {
-					validate(this);
+					validate(this, elemSiblings);
 				});
+				if (completion(elemSiblings)) {
+					$(settings.blockUntilComplete).prop('disabled', false).css('cursor', 'pointer');
+				}
+				else {
+					$(settings.blockUntilComplete).prop('disabled', true).css('cursor', 'not-allowed');
+				}
 			}
 			// Element is not pristine (is dirty)
 			else {
@@ -78,11 +91,19 @@
 				}
 				// If validation fails...
 				else {
-					$element.next().remove();
+					if ( settings.invalidAfter ) {
+						$element.next().remove();
+					}
 					$element.addClass(settings.invalidClass);
 					if (settings.invalidAfter) {
 						$element.after(settings.invalidAfterElem);
 					}
+				}
+				if (completion(elemSiblings)) {
+					$(settings.blockUntilComplete).prop('disabled', false).css('cursor', 'pointer');
+				}
+				else {
+					$(settings.blockUntilComplete).prop('disabled', true).css('cursor', 'not-allowed');
 				}
 			}
 		}
@@ -90,14 +111,19 @@
 		return this.each(function() {
 			$this = $(this);
 			$this.attr('autocomplete', (settings.autocomplete ? "on" : "off"));
-			$this.find("button[type='submit']").prop('disabled', (settings.blockUntilComplete === true ? true : false ) );
+			if (settings.blockUntilComplete !== null) {
+				$(settings.blockUntilComplete).prop('disabled', true);
+			}
 			var $formElems = $this.find('input[data-validate]');
 			$formElems.each(function() {
 				var $elem = $(this);
 				$elem.bind('blur', function() {
-					validate(this);
+					validate(this, $formElems);
 				});
 				$elem.addClass("pristine").attr('required','true');
+				if (settings.requiredFlag) {
+					$elem.after(settings.requiredElement);
+				}
 				/**************************************************************
 				******* TO DO -- MAKE THIS WORK WITH DELETION. Currently does
 				******* not support deletion of characters. Figure out how to
@@ -121,33 +147,35 @@
 						if ( $elem.val() !== "") {
 							$formElems.each(function() {
 								if ( $(this).val() !== "" ) {
-									validate(this);
+									validate(this, $formElems);
 								}
 							});
 						}
 					}, 200);
 				}
 			});
+			/*
 			setInterval(function() {
-				if (settings.blockUntilComplete) {
+				if ( typeof(settings.blockUntilComplete) == "string") {
 					if (completion($formElems)) {
-						$this.find("button[type='submit']").prop('disabled', false);
+						$(settings.blockUntilComplete).prop('disabled', false).css('cursor', 'pointer');
 					}
 					else {
-						$this.find("button[type='submit']").prop('disabled', true);
+						$(settings.blockUntilComplete).prop('disabled', true).css('cursor', 'not-allowed');
 					}
 				}
 			}, 200);
+			*/
 		});
 	};
 
 	// Exposing the defaults
 	$.fn.validator.defaults = {
-		name: "^[a-zA-Z]{2,}",
+		name: "^[a-zA-Z]{2,15}\\s[a-zA-Z]{2,15}",
 		address: "^.{5,}",
 		city: "^[a-zA-Z]{2,}",
 		state: "^[a-zA-Z]{2,}",
-		zip: "^[0-9]{5}",
+		zip: "(?:^[0-9]{5})|(?:^[0-9a-zA-Z]{4,})",
 		country: "^[a-zA-Z]{3,}",
 		phone: "^[0-9]{7,11}$",
 		phoneWithFormat: "^\\(\\d{3}\\) \\d{3}\\-\\d{4}",
@@ -155,14 +183,17 @@
 		email: "^[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\\.[a-zA-Z]{2,4}",
 		url: "[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)",
 		autocomplete: false,
+		requiredFlag: true,
+		requiredElement: "<i class='fa fa-fw fa-exclamation' style='color:#CCC'></i>",
 		validClass: "valid",
-		validAfter: false,
-		validAfterElem: "<i class='fa fa-fw fa-check' style='color:#2ecc71;'></i>",
+		validAfter: true,
+		validAfterElem: "<i class='fa fa-fw fa-check' style='color:#7ca82b;'></i>",
 		invalidClass: "invalid",
-		invalidAfter: false,
-		invalidAfterElem: "<i class='fa fa-fw fa-times' style='color:#e74c3c';></i>",
-		requiredClass: null,
-		optionalClass: null,
-		blockUntilComplete: true
+		invalidAfter: true,
+		invalidAfterElem: "<i class='fa fa-fw fa-times' style='color:#cc3300';></i>",
+		// Block Until Complete: null if no action should be locked until completion.
+		// If you want to block a submit button until the form is complete,
+		// set blockUntilComplete to the id of the button to block.
+		blockUntilComplete: null
 	};
 }( jQuery ));

@@ -19,6 +19,26 @@
 			}
 		}
 
+		// .mergeValdiation is used to 
+		this.mergeValidation = function(target, regexes_to_merge) {
+			if (typeof(regexes_to_merge) == "string") {
+				check[target] = new RegExp(check[target].source + "|" + check[regexes_to_merge].source );
+			}
+			else if (regexes_to_merge instanceof Array) {
+				check[target] = new RegExp(check[target].source + recursiveMerge(regexes_to_merge));
+			}
+			return this;
+		};
+
+		function recursiveMerge(list) {
+			if (list.length === 0) {
+				return "";
+			}
+			else {
+				return "|" + check[list[0]].source + recursiveMerge(list.slice(1));
+			}
+		}
+
 		function completion(elems) {
 			if (elems.length === 0) {
 				return true;
@@ -112,11 +132,16 @@
 			$this = $(this);
 			$this.attr('autocomplete', (settings.autocomplete ? "on" : "off"));
 			if (settings.blockUntilComplete !== null) {
-				$(settings.blockUntilComplete).prop('disabled', true);
+				$(settings.blockUntilComplete).prop('disabled', true).css('cursor', 'not-allowed');
 			}
 			var $formElems = $this.find('input[data-validate]');
 			$formElems.each(function() {
 				var $elem = $(this);
+				if (settings.immediateValidation) {
+					$elem.on('input', function() {
+						validate(this, $formElems);
+					});
+				}
 				$elem.bind('blur', function() {
 					validate(this, $formElems);
 				});
@@ -129,6 +154,8 @@
 				******* not support deletion of characters. Figure out how to
 				******* make it work with that.
 				*/
+				
+				/*
 				if ($elem.data('validate') == "phoneWithFormat" || $elem.data('validate') == "!phoneWithFormat") {
 					$elem.on('input', function() {
 						if ($elem.val().length == 3) {
@@ -140,6 +167,8 @@
 						//$elem.val($elem.val().replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3"))
 					});
 				}
+				*/
+
 				/*
 				**************************************************************/
 				if (settings.autocomplete) {
@@ -154,18 +183,6 @@
 					}, 200);
 				}
 			});
-			/*
-			setInterval(function() {
-				if ( typeof(settings.blockUntilComplete) == "string") {
-					if (completion($formElems)) {
-						$(settings.blockUntilComplete).prop('disabled', false).css('cursor', 'pointer');
-					}
-					else {
-						$(settings.blockUntilComplete).prop('disabled', true).css('cursor', 'not-allowed');
-					}
-				}
-			}, 200);
-			*/
 		});
 	};
 
@@ -184,7 +201,7 @@
 		url: "[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)",
 		autocomplete: false,
 		requiredFlag: true,
-		requiredElement: "<i class='fa fa-fw fa-exclamation' style='color:#CCC'></i>",
+		requiredElement: "<i class='fa fa-fw fa-asterisk' style='color:#CCC; font-size:10px;'></i>",
 		validClass: "valid",
 		validAfter: true,
 		validAfterElem: "<i class='fa fa-fw fa-check' style='color:#7ca82b;'></i>",
@@ -194,6 +211,7 @@
 		// Block Until Complete: null if no action should be locked until completion.
 		// If you want to block a submit button until the form is complete,
 		// set blockUntilComplete to the id of the button to block.
-		blockUntilComplete: null
+		blockUntilComplete: null,
+		immediateValidation: false
 	};
 }( jQuery ));

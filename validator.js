@@ -22,7 +22,8 @@
 		// Initialize the defaultStyles object
 		var defaultFormStyle = "<style> input:focus {border-color: #9ecaed; box-shadow: 0 0 3px #9ecaed; } input.valid {border-color: #7ca82b; transition: border 0.25s box-shadow: 0.25s; } input.valid:focus {box-shadow: 0 0 3px #7ca82b; } input.invalid {border-color: #cc3300; transition: border 0.25s box-shadow: 0.25s; } input.invalid:focus {box-shadow: 0 0 3px #cc3300; } </style> ";
 
-		// .mergeValdiation is used to 
+		// mergeValdiation is used to combine two or more regexs into one, appending them to the first one passed through (target)
+		// regexes_to_merge should either be a string for one regex or an array of strings for multiple regexs
 		this.mergeValidation = function(target, regexes_to_merge) {
 			if (typeof(regexes_to_merge) == "string") {
 				check[target] = new RegExp(check[target].source + "|" + check[regexes_to_merge].source );
@@ -200,7 +201,7 @@
 		state: "^[a-zA-Z]{2,}",
 		zip: "(?:^[0-9]{5})|(?:^[0-9a-zA-Z]{4,})",
 		country: "^[a-zA-Z]{3,}",
-		phone: "^[0-9]{7,11}$",
+		phone: "^\\d{3}(?:[-|.|\\ ])*\\d{3}(?:[-|.|\\ ])*\\d{4,6}",
 		phoneWithFormat: "^\\(\\d{3}\\) \\d{3}\\-\\d{4}",
 		ext: "^x[0-9]{1,}|^[0-9]{1,}",
 		email: "^[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\\.[a-zA-Z]{2,4}",

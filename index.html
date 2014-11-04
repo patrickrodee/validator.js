@@ -68,7 +68,6 @@
 		<input type="text" data-validate="name" id="name" placeholder="First Last">
 		<br>
 		<br>
-		<!--
 		<label for="email">Email</label>
 		<input type="email" data-validate="email" name="email" placeholder="Email">
 		<br>
@@ -93,7 +92,6 @@
 		<input type="text" data-validate="country" name="country" placeholder="Country">
 		<br>
 		<br>
-		-->
 		<label for="url">URL</label>
 		<input type="url" data-validate="url" name="url" placeholder="URL">
 		<br>
@@ -101,9 +99,9 @@
 		<button type="submit" id="actionToBlock">Submit Form</button>
 	</form>
 	<script>
-	$("#myform").validator({
+	var myform = $("#myform").validator({
 		blockUntilComplete: "#actionToBlock",
-		defaultStyle: true
+		defaultStyle: true,	
 	});
 	</script>
 </body>

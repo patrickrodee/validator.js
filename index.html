@@ -28,11 +28,13 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
+	/*
 	input:focus {
 		border-color: #9ecaed;
 		box-shadow: 0 0 3px #9ecaed;
 		color: #000;
 	}
+	*/
 	button {
 		margin-left: 84px;
 		margin-top: 30px;
@@ -42,6 +44,7 @@
 		background: #FFF;
 		border: 1px solid #CCC;
 	}
+	/*
 	.valid {
 		border-color: #7ca82b;
 		transition: border 0.25s box-shadow: 0.25s;
@@ -56,6 +59,7 @@
 	.invalid:focus {
 		box-shadow: 0 0 3px #cc3300;
 	}
+	*/
 	</style>
 </head>
 <body>
@@ -98,7 +102,8 @@
 	</form>
 	<script>
 	$("#myform").validator({
-		blockUntilComplete: "#actionToBlock"
+		blockUntilComplete: "#actionToBlock",
+		defaultStyle: true
 	});
 	</script>
 </body>

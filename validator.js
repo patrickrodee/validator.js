@@ -19,6 +19,9 @@
 			}
 		}
 
+		// Initialize the defaultStyles object
+		var defaultFormStyle = "<style> input:focus {border-color: #9ecaed; box-shadow: 0 0 3px #9ecaed; } input.valid {border-color: #7ca82b; transition: border 0.25s box-shadow: 0.25s; } input.valid:focus {box-shadow: 0 0 3px #7ca82b; } input.invalid {border-color: #cc3300; transition: border 0.25s box-shadow: 0.25s; } input.invalid:focus {box-shadow: 0 0 3px #cc3300; } </style> ";
+
 		// .mergeValdiation is used to 
 		this.mergeValidation = function(target, regexes_to_merge) {
 			if (typeof(regexes_to_merge) == "string") {
@@ -130,6 +133,9 @@
 
 		return this.each(function() {
 			$this = $(this);
+			if (settings.defaultStyle) {
+				$(defaultFormStyle).appendTo($this);
+			}
 			$this.attr('autocomplete', (settings.autocomplete ? "on" : "off"));
 			if (settings.blockUntilComplete !== null) {
 				$(settings.blockUntilComplete).prop('disabled', true).css('cursor', 'not-allowed');
@@ -212,6 +218,7 @@
 		// If you want to block a submit button until the form is complete,
 		// set blockUntilComplete to the id of the button to block.
 		blockUntilComplete: null,
-		immediateValidation: false
+		immediateValidation: false,
+		defaultStyle: false
 	};
 }( jQuery ));

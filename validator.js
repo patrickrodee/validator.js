@@ -24,7 +24,7 @@
 
 		// mergeValdiation is used to combine two or more regexs into one, appending them to the first one passed through (target)
 		// regexes_to_merge should either be a string for one regex or an array of strings for multiple regexs
-		this.mergeValidation = function(target, regexes_to_merge) {
+		this.merge = function(target, regexes_to_merge) {
 			if (typeof(regexes_to_merge) == "string") {
 				check[target] = new RegExp(check[target].source + "|" + check[regexes_to_merge].source );
 			}
@@ -49,15 +49,15 @@
 			}
 			else {
 				var $elem = $(elems[0]);
-				var vType = $elem.data("validate");
+				var vType = ($elem.data("validate").slice(-1) == "!" ? $elem.data("validate").slice(0,-1) : $elem.data("validate") );
 				return check[vType].test( $elem.val() ) && completion(elems.slice(1));
 			}
 		}
 
 		function validate(element, elemSiblings) {
 			$element = $(element);
-			// If it is required (has a "!" at the front), pass it through without the !
-			var validateType = $element.data("validate");
+			// If it is set for immediate validation (has a "!" at the back), pass it through without the !
+			var validateType = ($element.data("validate").slice(-1) == "!" ? $element.data("validate").slice(0,-1) : $element.data("validate") );
 			// Element hasn't been clicked yet.
 			if ( $element.hasClass('pristine') ) {
 				// If validation passes...
@@ -87,9 +87,14 @@
 				}
 				// To keep bound events low, we unbind "blur" from items that are dirty and
 				// now bind the "input" event to keep track of input changes.
-				$element.unbind("blur").removeClass('pristine').addClass('dirty').on('input', function() {
-					validate(this, elemSiblings);
-				});
+				if ($element.data('validate').slice(-1) != "!") {
+					$element.unbind("blur").removeClass('pristine').addClass('dirty').on('input', function() {
+						validate(this, elemSiblings);
+					});
+				}
+				else {
+					$element.removeClass('pristine').addClass('dirty');
+				}
 				if (completion(elemSiblings)) {
 					$(settings.blockUntilComplete).prop('disabled', false).css('cursor', 'pointer');
 				}
@@ -142,42 +147,18 @@
 				$(settings.blockUntilComplete).prop('disabled', true).css('cursor', 'not-allowed');
 			}
 			var $formElems = $this.find('input[data-validate]');
+			var $alwaysMonitor = [];
 			$formElems.each(function() {
 				var $elem = $(this);
-				if (settings.immediateValidation) {
-					$elem.on('input', function() {
-						validate(this, $formElems);
-					});
+				if ($elem.data("validate").slice(-1) == "!") {
+					$alwaysMonitor.push($elem);
 				}
 				$elem.bind('blur', function() {
 					validate(this, $formElems);
-				});
-				$elem.addClass("pristine").attr('required','true');
+				}).addClass("pristine").attr('required','true');
 				if (settings.requiredFlag) {
 					$elem.after(settings.requiredElement);
 				}
-				/**************************************************************
-				******* TO DO -- MAKE THIS WORK WITH DELETION. Currently does
-				******* not support deletion of characters. Figure out how to
-				******* make it work with that.
-				*/
-				
-				/*
-				if ($elem.data('validate') == "phoneWithFormat" || $elem.data('validate') == "!phoneWithFormat") {
-					$elem.on('input', function() {
-						if ($elem.val().length == 3) {
-							$elem.val($elem.val().replace(/(\d{3})/, "($1) "));
-						}
-						if ($elem.val().length >= 9 ) {
-							$elem.val($elem.val().replace(/(\u0028\d{3}\u0029\s\d{3})(\d{1,4})/, "$1-$2"));
-						}
-						//$elem.val($elem.val().replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3"))
-					});
-				}
-				*/
-
-				/*
-				**************************************************************/
 				if (settings.autocomplete) {
 					setInterval(function() {
 						if ( $elem.val() !== "") {
@@ -190,6 +171,18 @@
 					}, 200);
 				}
 			});
+			// Turns on specific field watching if ! flags are added to any elements
+			// Only turns on if autocomplete is set to false so there aren't multiple
+			// intervals running, clogging up memory n shit.
+			if ($alwaysMonitor.length > 0 && !settings.autocomplete) {
+				setInterval(function() {
+					$alwaysMonitor.forEach(function(el) {
+						if (el.val() !== "") {
+							validate(el, $formElems);
+						}
+					});
+				}, 200);
+			}
 		});
 	};
 
